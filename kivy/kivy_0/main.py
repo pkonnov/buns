@@ -8,13 +8,13 @@ from kivy.uix.gridlayout import GridLayout # for grid style view
 from kivy.uix.codeinput import CodeInput # for works code
 from kivy.uix.textinput import TextInput # for works text
 
-from pygments.lexer import CLexer # syntax highlighting, support many scripts
+from pygments.lexers import CLexer # syntax highlighting, support many scripts
 
 from os import system, popen #
 
 
 class TextEditorApp(App):
-# at the end of the class name necessarily NameClassApp def build() <-- start function, owner function 
+# at the end of the class name necessarily NameClassApp def build() <-- start function, owner function
 
 	def add(self, args):
 		'''
@@ -37,7 +37,7 @@ class TextEditorApp(App):
 		except FileNotFoundError:
 			result = 'Error: file not found!!'
 		else:
-			system('gcc %s'%(sef.nameF.text)) # run compile
+			system('gcc %s'%(self.nameF.text)) # run compile
 			for string in popen('./a.out'): # iterating ower rows
 				result += string
 		finally:
@@ -59,7 +59,7 @@ class TextEditorApp(App):
 
 
 	def build(self):
-		root = BoxLayout(orientation='vertical', 
+		root = BoxLayout(orientation='vertical',
 		padding=5)# options to display for window
 		btn = GridLayout(cols=3,
 			size_hint=[1,.07]) #the markup for btn
@@ -69,20 +69,20 @@ class TextEditorApp(App):
 
 		btnA = Button(text='Add File',
 			on_press=self.add) # what is the function triggered by clicking this button
-		btn.add_widget(self.btnA)
+		btn.add_widget(btnA)
 
 		btnC = Button(text='Compile File',
 			on_press=self.compile)
-		btn.add_widget(self.btnC)
+		btn.add_widget(btnC)
 
 		btnS = Button(text='Save File',
 			on_press=self.save)
-		btn.add_widget(self.btnS)
+		btn.add_widget(btnS)
 
 		root.add_widget(btn) # add in boxlayout
 
 		self.code = CodeInput(text='',
-			lexer=Clexer())
+			lexer=CLexer())
 		root.add_widget(self.code) # add codeinput in window
 
 		self.check = TextInput(text='',
@@ -93,4 +93,4 @@ class TextEditorApp(App):
 
 
 if __name__ == '__main__':
-	TextEditorApp()
+	TextEditorApp().run()
