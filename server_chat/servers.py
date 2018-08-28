@@ -1,3 +1,4 @@
+#!/usr/bin/python3.6
 import socket, time
 
 host = socket.gethostbyname(socket.gethostname()) # 192.168.0.1

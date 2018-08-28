@@ -1,3 +1,4 @@
+#!/usr/bin/python3.6
 import socket, threading, time
 
 key = 8194

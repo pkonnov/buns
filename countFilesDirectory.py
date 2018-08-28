@@ -1,14 +1,11 @@
 #!/usr/bin/python3
-import sys
-import os
+import sys, os
 import glob
 
 """
 итерироваться по файлам в директории
 считать кол-во файлов в дериктории
 """
-path_dir = str(input('Введите путь до дериктории: '))
-nameExtention = str(input('Введите расширение файла: '))
 
 # def dirTarget(*args):
 
@@ -19,12 +16,18 @@ nameExtention = str(input('Введите расширение файла: '))
 #     item_files = os.walk(dir_name)
 #     for root, dirs, files  in item_files:
 #         print(len(files))
-
+class GetPathDirectory():
+	path_dir1 = str(input('Введите путь до дериктории: '))
 
 def dirListFilesGlob(*args):
-    targetLists = glob.glob(path_dir + '/*.%s' % nameExtention)
-    print('Найдено ' + str(len(targetLists)) + ' файлов с расширением %s'
-            % nameExtention)
+	path_dir = GetPathDirectory.path_dir1
+	allFiles = glob.glob(path_dir + '/*')
+	# iterFiles = [i for i in allFiles]
+	# print(iterFiles)
+	nameExtention = str(input('Введите расширение файла: '))
+	targetLists = glob.glob(path_dir + '/*.%s' % nameExtention)
+	print('Найдено ' + str(len(targetLists)) + ' файлов с расширением %s'
+	    % nameExtention)
 
 
 
