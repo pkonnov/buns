@@ -8,6 +8,9 @@ name = "pypi"
 [packages]
 PyYAML = "==3.12"
 sqlalchemy = "*"
+"aiohttp-jinja2" = "*"
+uvloop = "*"
+aioreloader = "*"
 
 [requires]
 python_version = "3.6"

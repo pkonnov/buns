@@ -1,4 +1,6 @@
 from aiohttp import web
+from aiohttp_jinja2 import template
+
 import hashlib
 
 
@@ -12,3 +14,8 @@ async def talk_url(request):
     param_hash = request.rel_url.query['param_hash']
     params = "sums:{}, id_u:{}, hash:{}".format(sums, id_u, param_hash)
     return web.Response(text=str(params))
+
+
+@template('index.html')
+async def index(request):
+    return {}
