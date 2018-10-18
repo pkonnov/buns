@@ -1,0 +1,97 @@
+#####/etc/ansible/hosts
+[mikrotik_ovpn_pki]
+
+test1 ansible_ssh_port=22 ansible_ssh_user=admin ansible_ssh_pass=PassWord123 ansible_ssh_host=172.20.78.3
+
+###playbook###
+- hosts: mikrotik_ovpn_pki
+
+  remote_user: admin77
+
+  serial: 1
+
+  connection: local
+
+  gather_facts: yes
+
+  vars_prompt:
+
+  - name: org
+
+    prompt: "Введите имя оршанизации"
+
+    private: no
+
+  - name: nameca
+
+    prompt: "введите имя СА"
+
+    private: no
+
+  - name: caaddr
+
+    prompt: "введите адрес СА"
+
+    private: no
+
+  - name: namesrv
+
+    prompt: "введите имя сервера"
+
+    private: no
+
+  - name: vpnaddr
+
+    prompt: "введите внутренний адрес vpn-сервера"
+
+    private: no
+
+  - name: vpnpool
+
+    prompt: "введите внутренний пул адресов для vpn-сервера"
+
+    private: no
+
+  - name: vpnport
+
+    prompt: "введите port для vpn-сервера"
+
+    private: no
+
+  tasks:
+
+  - name: "Создание template центра сертификации"
+
+    action: command  sshpass ssh {{ ansible_ssh_user }}@{{ ansible_ssh_host }} "/certificate add name=template-CA country="RU" state="Moscow" locality="Moscow" organization="{{ org }}" unit="IT" common-name="{{ nameca }}" key-size=4096 days-valid=3650 key-usage=crl-sign,key-cert-sign"
+
+  - name: "Создание сертификата СА"
+
+    action: command  sshpass -p {{ ansible_ssh_pass }} ssh {{ ansible_ssh_user }}@{{ ansible_ssh_host }} "/certificate sign template-CA ca-crl-host={{ caaddr }} name="{{ nameca }}""
+
+  - name: "пауза  60 секунд"
+
+    local_action: pause seconds=60
+
+  - name: "Создание template сервера"
+
+    action: command  sshpass -p {{ ansible_ssh_pass }} ssh {{ ansible_ssh_user }}@{{ ansible_ssh_host }} "/certificate add name=template-SRV country="RU" state="Moscow" locality="Moscow" organization="{{ org }}" unit="IT" common-name="{{ namesrv }}" key-size=4096 days-valid=3650 key-usage=digital-signature,key-encipherment,tls-server"
+
+  - name: "Создание сертификата сервера"
+
+    action: command  sshpass -p {{ ansible_ssh_pass }} ssh {{ ansible_ssh_user }}@{{ ansible_ssh_host }} "/certificate sign template-SRV ca="{{ nameca }}" name="{{ namesrv }}""
+
+  - name: "Создание template клиента"
+
+    action: command  sshpass -p {{ ansible_ssh_pass }} ssh {{ ansible_ssh_user }}@{{ ansible_ssh_host }} "/certificate add name=template-CL country="RU" state="Moscow" locality="Moscow" organization="{{ org }}" unit="IT" common-name="test-client-ovpn-template" key-size=4096 days-valid=3650 key-usage=tls-client"
+
+  - name: "Настройка pool для OpenVPN Server"
+
+    action: command  sshpass -p {{ ansible_ssh_pass }} ssh {{ ansible_ssh_user }}@{{ ansible_ssh_host }} "/ip pool add name=ovpn ranges={{ vpnpool }}"
+
+  - name: "Настройка profile OpenVPN Server"
+
+    action: command  sshpass -p {{ ansible_ssh_pass }} ssh {{ ansible_ssh_user }}@{{ ansible_ssh_host }} "/ppp profile add name=ovpn local-address={{ vpnaddr }} remote-address=ovpn use-encryption=yes dns-server={{ vpnaddr }}"
+
+  - name: "Настройка OpenVPN Server"
+
+    action: command  sshpass -p {{ ansible_ssh_pass }} ssh {{ ansible_ssh_user }}@{{ ansible_ssh_host }} "/interface ovpn-server server set enabled=yes port={{ vpnport }} mode=ip default-profile=ovpn certificate={{ namesrv }} auth=md5,sha1 cipher=aes256,aes128,aes192,blowfish128"
