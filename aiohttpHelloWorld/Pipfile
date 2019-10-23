@@ -6,7 +6,7 @@ name = "pypi"
 [dev-packages]
 
 [packages]
-PyYAML = "==3.12"
+PyYAML = "==5.1"
 sqlalchemy = "*"
 "aiohttp-jinja2" = "*"
 uvloop = "*"
